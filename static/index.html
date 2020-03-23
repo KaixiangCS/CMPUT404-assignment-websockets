@@ -63,7 +63,6 @@ function drawCircle(context,entity) {
         var x = entity["x"];
         var y = entity["y"];
         //moveTo(x,y);
-        //fillStyle = entity["colour"];
         // this can make the color become dynamic
         fillStyle = getRandomColor();
         strokeStyle = fillStyle;
@@ -82,15 +81,16 @@ function prepEntity(entity) {
     }
     if (!entity["radius"]) {
         entity["radius"] = getRandomArbitrary(25, 75);
+        //entity["radius"] = 50;
     }
     return entity;
 }
 
 function clearFrame() {
     with(context) {
-	moveTo(0,0);
-	fillStyle = "#000";
-	fillRect(0,0,W,H);
+	     moveTo(0,0);
+	     fillStyle = "#000";
+	     fillRect(0,0,W,H);
     }
 
 }
@@ -123,19 +123,19 @@ function drawFrame() {
 // So use this code, it works well on multitouch devices as well.
 
 function getPosition(e) {
-	if ( e.targetTouches && e.targetTouches.length > 0) {
-		var touch = e.targetTouches[0];
-		var x = touch.pageX  - canvas.offsetLeft;
-		var y = touch.pageY  - canvas.offsetTop;
-		return [x,y];
-	} else {
-		var rect = e.target.getBoundingClientRect();
-		var x = e.offsetX || e.pageX - rect.left - window.scrollX;
-		var y = e.offsetY || e.pageY - rect.top  - window.scrollY;
-		var x = e.pageX  - canvas.offsetLeft;
-		var y = e.pageY  - canvas.offsetTop;
-		return [x,y];
-	}
+	      if ( e.targetTouches && e.targetTouches.length > 0) {
+		            var touch = e.targetTouches[0];
+		            var x = touch.pageX  - canvas.offsetLeft;
+		            var y = touch.pageY  - canvas.offsetTop;
+		            return [x,y];
+	      } else {
+		            var rect = e.target.getBoundingClientRect();
+		            var x = e.offsetX || e.pageX - rect.left - window.scrollX;
+		            var y = e.offsetY || e.pageY - rect.top  - window.scrollY;
+		            var x = e.pageX  - canvas.offsetLeft;
+		            var y = e.pageY  - canvas.offsetTop;
+		            return [x,y];
+	      }
 }
 
 function addEntity(entity, data) {
@@ -258,7 +258,7 @@ mouse.mouseuppers.push(function(x,y,clicked,e) {
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
     addEntityWithoutName({'x':x,'y':y,
-                          'radius':getRandomArbitrary(5, 20)});
+                          'radius':getRandomArbitrary(25, 75)});
 });
 
 
@@ -278,10 +278,9 @@ function wsSetup() {
                 try {
                     if (xhr.status==200) {
                         //XXX: parse some JSON from the request!
-                        //alert(xhr.responseText)
-                        var responseObj = JSON.parse(xhr.responseText);
                         //XXX: Pass the data to the callback!
-                        //callback(responseObj)
+                        //callback(JSON.parse(xhr.responseText));
+                        var responseObj = JSON.parse(xhr.responseText);
                         world = responseObj;
                     }
                 }
@@ -290,7 +289,11 @@ function wsSetup() {
                 }
             }
         };
+        //XXX: POST to a URL
         xhr.open("GET", "http://" + host + "/world");
+        //https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest/setRequestHeader
+        //myReq.setRequestHeader(header, value);
+        //Remember to use application/json!
         xhr.setRequestHeader("Content-Type","application/json");
         //XXX: set the mimetype and the accept headers!
         xhr.setRequestHeader("Accept","application/jason");
@@ -305,7 +308,9 @@ function wsSetup() {
             debug("WebSocket Recv:" + msg.data);
             //XXX: TODO What are you going to do here?
             var message = JSON.parse(msg.data);
-            world = message
+            for (entity in message) {
+                world[entity] = message[entity]
+            }
             drawNextFrame();
         } catch (e) {
             alert("socket on message: " + e);
