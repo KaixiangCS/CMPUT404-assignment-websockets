@@ -115,7 +115,7 @@ def read_ws(ws,client):
                 # set the entity from the packet to the listener
                 for i in packet:
                     data = packet[i]
-                    myWorld.set(i, packet[i])
+                    myWorld.set(i, data)
             else:
                 break
     except:

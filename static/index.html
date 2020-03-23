@@ -280,8 +280,7 @@ function wsSetup() {
                         //XXX: parse some JSON from the request!
                         //XXX: Pass the data to the callback!
                         //callback(JSON.parse(xhr.responseText));
-                        var responseObj = JSON.parse(xhr.responseText);
-                        world = responseObj;
+                        world = JSON.parse(xhr.responseText);
                     }
                 }
                 catch(e) {
@@ -307,9 +306,8 @@ function wsSetup() {
         try {
             debug("WebSocket Recv:" + msg.data);
             //XXX: TODO What are you going to do here?
-            var message = JSON.parse(msg.data);
-            for (entity in message) {
-                world[entity] = message[entity]
+            for (i in JSON.parse(msg.data)) {
+                world[i] = JSON.parse(msg.data)[i]
             }
             drawNextFrame();
         } catch (e) {
